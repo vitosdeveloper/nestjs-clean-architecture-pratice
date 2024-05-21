@@ -8,7 +8,7 @@ class ClassFieldValidatorsStub extends ClassFieldValidators<{
 describe('ClassFieldValidators unit tests', () => {
   let sut;
 
-  beforeAll(() => {
+  beforeEach(() => {
     sut = new ClassFieldValidatorsStub();
   });
 
@@ -27,5 +27,16 @@ describe('ClassFieldValidators unit tests', () => {
     expect(validateSyncSpy).toHaveBeenCalled();
     expect(sut.validatedData).toBeNull();
     expect(sut.errors).toStrictEqual({ field });
+  });
+
+  it('should not get errors after validating', () => {
+    const validateSyncSpy = jest.spyOn(classValidatorLib, 'validateSync');
+    const field = 'value';
+    validateSyncSpy.mockReturnValue([]);
+
+    expect(sut.validate({ field })).toBeTruthy();
+    expect(validateSyncSpy).toHaveBeenCalled();
+    expect(sut.validatedData).toStrictEqual({ field });
+    expect(sut.errors).toBeNull();
   });
 });

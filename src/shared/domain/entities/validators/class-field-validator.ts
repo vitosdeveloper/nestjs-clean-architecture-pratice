@@ -10,7 +10,7 @@ export abstract class ClassFieldValidators<ValidatedProps>
   validate(data: any) {
     const errors = validateSync(data);
     if (!errors.length) {
-      this.validate = data;
+      this.validatedData = data;
       return true;
     }
 
