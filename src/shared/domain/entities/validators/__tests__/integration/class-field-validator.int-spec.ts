@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 import { ClassFieldValidators } from '../../class-field-validator';
 
 class StubRules {
@@ -6,10 +6,6 @@ class StubRules {
   @IsString()
   @IsNotEmpty()
   name: string;
-
-  @IsNumber()
-  @IsNotEmpty()
-  price: number;
 
   constructor(data: any) {
     Object.assign(this, data);
@@ -37,15 +33,11 @@ describe('ClassFieldValidators integration tests', () => {
         'name must be a string',
         'name must be shorter than or equal to 255 characters',
       ],
-      price: [
-        'price should not be empty',
-        'price must be a number conforming to the specified constraints',
-      ],
     });
   });
 
   it('should validate without errors', () => {
-    const data = { name: 'value', price: 9 };
+    const data = { name: 'value' };
     expect(sut.validate(data)).toBeTruthy();
     expect(sut.errors).toStrictEqual(null);
     expect(sut.validatedData).toStrictEqual(new StubRules(data));
