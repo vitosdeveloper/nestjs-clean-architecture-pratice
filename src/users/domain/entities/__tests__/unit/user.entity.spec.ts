@@ -6,8 +6,10 @@ describe('UserEntity unit tests', () => {
   let props: UserProps;
 
   beforeEach(() => {
+    UserEntity.validate = jest.fn();
     props = UserDataBuilder({});
     sut = new UserEntity(props);
+    expect(UserEntity.validate).toHaveBeenCalled();
   });
 
   test('Constructor method', () => {
