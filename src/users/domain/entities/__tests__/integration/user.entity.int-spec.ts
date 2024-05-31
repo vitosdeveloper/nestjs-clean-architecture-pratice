@@ -30,5 +30,11 @@ describe('UserEntity integration tests', () => {
     it('should throw an error when creating a user with a invalid createdAt', () => {
       verifyField('createdAt');
     });
+
+    it('should be a valid user', () => {
+      expect.assertions(0);
+      const props = UserDataBuilder({});
+      new UserEntity(props);
+    });
   });
 });
