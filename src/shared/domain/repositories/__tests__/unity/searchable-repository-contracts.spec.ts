@@ -1,4 +1,7 @@
-import { SearchParams } from '../../searchable-repository-contracts';
+import {
+  SearchParams,
+  SearchResult,
+} from '../../searchable-repository-contracts';
 
 describe('searchableRepositoryContracts unit tests', () => {
   describe('SearchParams tests', () => {
@@ -118,6 +121,76 @@ describe('searchableRepositoryContracts unit tests', () => {
         const sut = new SearchParams({ sort: 'name', filter: filter as any });
         expect(sut.filter).toBe(expected);
       });
+    });
+  });
+
+  describe('SearchResult tests', () => {
+    test('construct props', () => {
+      let sut = new SearchResult({
+        items: ['teste1', 'teste2', 'teste13', 'teste4'] as any,
+        total: 4,
+        currentPage: 1,
+        perPage: 2,
+        sort: null,
+        sortDir: null,
+        filter: null,
+      });
+
+      expect(sut.toJSON()).toStrictEqual({
+        items: ['teste1', 'teste2', 'teste13', 'teste4'] as any,
+        total: 4,
+        currentPage: 1,
+        perPage: 2,
+        lastPage: 2,
+        sort: null,
+        sortDir: null,
+        filter: null,
+      });
+
+      sut = new SearchResult({
+        items: ['teste1', 'teste2', 'teste13', 'teste4'] as any,
+        total: 4,
+        currentPage: 1,
+        perPage: 2,
+        sort: 'name',
+        sortDir: 'asc',
+        filter: 'test',
+      });
+
+      expect(sut.toJSON()).toStrictEqual({
+        items: ['teste1', 'teste2', 'teste13', 'teste4'] as any,
+        total: 4,
+        currentPage: 1,
+        perPage: 2,
+        lastPage: 2,
+        sort: 'name',
+        sortDir: 'asc',
+        filter: 'test',
+      });
+
+      sut = new SearchResult({
+        items: ['teste1', 'teste2', 'teste13', 'teste4'] as any,
+        total: 4,
+        currentPage: 1,
+        perPage: 10,
+        sort: 'name',
+        sortDir: 'asc',
+        filter: 'test',
+      });
+
+      expect(sut.lastPage).toStrictEqual(1);
+
+      sut = new SearchResult({
+        items: ['teste1', 'teste2', 'teste13', 'teste4'] as any,
+        total: 54,
+        currentPage: 1,
+        perPage: 10,
+        sort: 'name',
+        sortDir: 'asc',
+        filter: 'test',
+      });
+
+      expect(sut.lastPage).toStrictEqual(6);
     });
   });
 });
