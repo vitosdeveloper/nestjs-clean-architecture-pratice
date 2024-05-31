@@ -1,5 +1,5 @@
 import { Entity } from '@/shared/domain/entities/entity';
-import { InMemoryRepository } from '../../in-memory.repository';
+import { InMemoryRepository } from '../../in-memory-repository';
 import { NotFoundError } from '@/shared/errors/not-found-error';
 
 type StubEntityProps = {
