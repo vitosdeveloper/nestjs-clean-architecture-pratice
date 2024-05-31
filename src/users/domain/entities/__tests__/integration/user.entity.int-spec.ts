@@ -2,7 +2,7 @@ import { EntityValidationError } from '@/shared/errors/validation-error';
 import { UserEntity, UserProps } from '../../user.entity';
 import { UserDataBuilder } from '@/users/domain/testing/helpers/user-data-builder';
 
-const verifyField = (field: keyof UserProps) => {
+const verifyInvalidFields = (field: keyof UserProps) => {
   let props: UserProps = { ...UserDataBuilder({}), name: null };
   expect(() => new UserEntity(props)).toThrow(EntityValidationError);
   props = { ...props, [field]: '' };
@@ -16,25 +16,46 @@ const verifyField = (field: keyof UserProps) => {
 describe('UserEntity integration tests', () => {
   describe('constructor method', () => {
     it('should throw an error when creating a user with a invalid name', () => {
-      verifyField('name');
+      verifyInvalidFields('name');
     });
 
     it('should throw an error when creating a user with a invalid email', () => {
-      verifyField('email');
+      verifyInvalidFields('email');
     });
 
     it('should throw an error when creating a user with a invalid password', () => {
-      verifyField('password');
+      verifyInvalidFields('password');
     });
 
     it('should throw an error when creating a user with a invalid createdAt', () => {
-      verifyField('createdAt');
+      verifyInvalidFields('createdAt');
     });
 
     it('should be a valid user', () => {
       expect.assertions(0);
       const props = UserDataBuilder({});
       new UserEntity(props);
+    });
+  });
+
+  const verifyInvalidUpdateValues = (
+    field: 'updateName' | 'updatePassword',
+  ) => {
+    const entity = new UserEntity(UserDataBuilder({}));
+    expect(() => entity[field](null)).toThrow(EntityValidationError);
+    expect(() => entity[field]('')).toThrow(EntityValidationError);
+    expect(() => entity[field](1 as any)).toThrow(EntityValidationError);
+    expect(() => entity[field]('a'.repeat(256))).toThrow(EntityValidationError);
+  };
+  describe('update method', () => {
+    it('should throw an error when updating a user with a invalid name', () => {
+      verifyInvalidUpdateValues('updateName');
+    });
+
+    it('should be a valid name update', () => {
+      expect.assertions(0);
+      const entity = new UserEntity(UserDataBuilder({}));
+      entity.updateName('Vitor');
     });
   });
 });
