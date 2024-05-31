@@ -62,4 +62,17 @@ describe('InMemoryRepository unit tests', () => {
     const find = await sut.findById(entity.id);
     expect(find).toStrictEqual(updatedEntity);
   });
+
+  it('should fail removing a entity', async () => {
+    await expect(sut.delete(entity.id)).rejects.toThrow(
+      new NotFoundError('Entity not found'),
+    );
+  });
+
+  it('should remove a entity', async () => {
+    await sut.insert(entity);
+    await sut.delete(entity.id);
+    expect(sut.items).toHaveLength(0);
+    expect(sut.items).toStrictEqual([]);
+  });
 });
