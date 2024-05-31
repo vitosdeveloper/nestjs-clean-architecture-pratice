@@ -37,7 +37,7 @@ export abstract class InMemoryRepository<E extends Entity>
 
   protected async _getIndex(id: string): Promise<number> {
     await this._get(id);
-    const index = this.items.findIndex((i) => i.id !== id);
+    const index = this.items.findIndex((i) => i.id === id);
     return index;
   }
 }

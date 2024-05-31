@@ -42,4 +42,24 @@ describe('InMemoryRepository unit tests', () => {
     const result = await sut.findAll();
     expect(result).toStrictEqual([entity]);
   });
+
+  it('should fail updating a entity', async () => {
+    await expect(sut.update(entity)).rejects.toThrow(
+      new NotFoundError('Entity not found'),
+    );
+  });
+
+  it('should updated a entity', async () => {
+    await sut.insert(entity);
+    const updatedEntity = new StubEntity(
+      {
+        name: 'Vitos',
+        price: 9,
+      },
+      entity.id,
+    );
+    await sut.update(updatedEntity);
+    const find = await sut.findById(entity.id);
+    expect(find).toStrictEqual(updatedEntity);
+  });
 });
