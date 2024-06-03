@@ -174,5 +174,61 @@ describe('InMemoryRepository unit tests', () => {
         }),
       );
     });
+
+    it('should apply pagination and sorting', async () => {
+      const itemsToCompare = Array.from(items);
+      sut.items = itemsToCompare;
+      let params = await sut.search(
+        new SearchParams({ sort: null, page: 1, perPage: 2 }),
+      );
+      expect(params).toStrictEqual(
+        new SearchResult({
+          items: [items[0], items[1]],
+          total: 5,
+          currentPage: 1,
+          perPage: 2,
+          sort: null,
+          sortDir: null,
+          filter: null,
+        }),
+      );
+
+      params = await sut.search(
+        new SearchParams({ sort: 'name', sortDir: 'asc', page: 1, perPage: 2 }),
+      );
+
+      expect(params).toStrictEqual(
+        new SearchResult({
+          items: [items[2], items[1]],
+          total: 5,
+          currentPage: 1,
+          perPage: 2,
+          sort: 'name',
+          sortDir: 'asc',
+          filter: null,
+        }),
+      );
+
+      params = await sut.search(
+        new SearchParams({
+          sort: 'name',
+          sortDir: 'desc',
+          page: 1,
+          perPage: 2,
+        }),
+      );
+
+      expect(params).toStrictEqual(
+        new SearchResult({
+          items: [items[0], items[4]],
+          total: 5,
+          currentPage: 1,
+          perPage: 2,
+          sort: 'name',
+          sortDir: 'desc',
+          filter: null,
+        }),
+      );
+    });
   });
 });
