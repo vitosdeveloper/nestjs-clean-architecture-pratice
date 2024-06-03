@@ -98,7 +98,24 @@ describe('InMemoryRepository unit tests', () => {
     });
   });
 
-  describe('applyPagination method', () => {});
+  describe('applyPagination method', () => {
+    it('should paginate the items', async () => {
+      let paginatedItems = await sut['applyPagination'](items, 1, 2);
+      expect(paginatedItems).toStrictEqual([items[0], items[1]]);
+
+      paginatedItems = await sut['applyPagination'](items, 2, 2);
+      expect(paginatedItems).toStrictEqual([items[2], items[3]]);
+
+      paginatedItems = await sut['applyPagination'](items, 3, 2);
+      expect(paginatedItems).toStrictEqual([items[4]]);
+
+      paginatedItems = await sut['applyPagination'](items, 1, 3);
+      expect(paginatedItems).toStrictEqual([items[0], items[1], items[2]]);
+
+      paginatedItems = await sut['applyPagination'](items, 2, 3);
+      expect(paginatedItems).toStrictEqual([items[3], items[4]]);
+    });
+  });
 
   describe('applySearch method', () => {});
 });
