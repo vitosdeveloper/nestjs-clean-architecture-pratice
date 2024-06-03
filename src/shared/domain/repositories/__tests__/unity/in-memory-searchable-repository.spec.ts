@@ -1,6 +1,5 @@
 import { Entity } from '@/shared/domain/entities/entity';
 import { InMemorySearchableRepository } from '../../in-memory-searchable-repository';
-import { filter } from 'rxjs';
 
 type StubEntityProps = {
   name: string;
@@ -10,6 +9,7 @@ type StubEntityProps = {
 class StubEntity extends Entity<StubEntityProps> {}
 
 class StubInMemorySearchableRepository extends InMemorySearchableRepository<StubEntity> {
+  sorteableFields = ['name'];
   protected async applyFilter(
     items: StubEntity[],
     filter: string | null,
@@ -65,7 +65,40 @@ describe('InMemoryRepository unit tests', () => {
     });
   });
 
-  describe('applySort method', () => {});
+  describe('applySort method', () => {
+    it('shouldn"t order passing invalid params', async () => {
+      const itemsToCompare = Array.from(items);
+      let sortedItems = await sut['applySort'](items, null, null);
+      expect(sortedItems).toStrictEqual(itemsToCompare);
+
+      sortedItems = await sut['applySort'](items, 'price', 'asc');
+      expect(sortedItems).toStrictEqual(itemsToCompare);
+    });
+
+    it('should sort correctly', async () => {
+      const itemsToCompare = Array.from(items);
+
+      let sortedItems = await sut['applySort'](items, 'name', 'asc');
+      expect(sortedItems).toStrictEqual([
+        itemsToCompare[2],
+        itemsToCompare[1],
+        itemsToCompare[3],
+        itemsToCompare[4],
+        itemsToCompare[0],
+      ]);
+
+      sortedItems = await sut['applySort'](items, 'name', 'desc');
+      expect(sortedItems).toStrictEqual([
+        itemsToCompare[0],
+        itemsToCompare[4],
+        itemsToCompare[3],
+        itemsToCompare[1],
+        itemsToCompare[2],
+      ]);
+    });
+  });
+
   describe('applyPagination method', () => {});
+
   describe('applySearch method', () => {});
 });
