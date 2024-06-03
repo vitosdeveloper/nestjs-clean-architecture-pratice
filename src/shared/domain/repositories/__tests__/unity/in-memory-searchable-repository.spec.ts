@@ -1,5 +1,9 @@
 import { Entity } from '@/shared/domain/entities/entity';
 import { InMemorySearchableRepository } from '../../in-memory-searchable-repository';
+import {
+  SearchParams,
+  SearchResult,
+} from '../../searchable-repository-contracts';
 
 type StubEntityProps = {
   name: string;
@@ -117,5 +121,58 @@ describe('InMemoryRepository unit tests', () => {
     });
   });
 
-  describe('applySearch method', () => {});
+  describe('search method', () => {
+    it('should apply pagination even when it contains null params', async () => {
+      const entity = new StubEntity({ name: 'test', price: 50 });
+      const items = Array(16).fill(entity);
+      sut.items = items;
+
+      const params = await sut.search(new SearchParams());
+      expect(params).toStrictEqual(
+        new SearchResult({
+          items: Array(15).fill(entity),
+          total: 16,
+          currentPage: 1,
+          perPage: 15,
+          sort: null,
+          sortDir: null,
+          filter: null,
+        }),
+      );
+    });
+
+    it('should apply pagination and filtering', async () => {
+      const itemsToCompare = Array.from(items);
+      sut.items = itemsToCompare;
+      let params = await sut.search(
+        new SearchParams({ filter: 'i', page: 1, perPage: 2 }),
+      );
+      expect(params).toStrictEqual(
+        new SearchResult({
+          items: [itemsToCompare[0], itemsToCompare[1]],
+          total: 4,
+          currentPage: 1,
+          perPage: 2,
+          sort: null,
+          sortDir: null,
+          filter: 'i',
+        }),
+      );
+
+      params = await sut.search(
+        new SearchParams({ filter: 'i', page: 2, perPage: 2 }),
+      );
+      expect(params).toStrictEqual(
+        new SearchResult({
+          items: [itemsToCompare[2], itemsToCompare[4]],
+          total: 4,
+          currentPage: 2,
+          perPage: 2,
+          sort: null,
+          sortDir: null,
+          filter: 'i',
+        }),
+      );
+    });
+  });
 });

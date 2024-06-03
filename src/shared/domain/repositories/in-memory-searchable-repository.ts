@@ -18,6 +18,7 @@ export abstract class InMemorySearchableRepository<E extends Entity>
       props.sort,
       props.sortDir,
     );
+
     const paginatedItems = await this.applyPagination(
       sortedItems,
       props.page,
