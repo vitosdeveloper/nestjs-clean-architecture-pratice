@@ -36,4 +36,27 @@ describe('UserInMemoryRepository unit tests', () => {
     const entity = new UserEntity(UserDataBuilder({}));
     await sut.emailExists(entity.email);
   });
+
+  it('shouldn"t filter items when the filter object is null', async () => {
+    const entity = new UserEntity(UserDataBuilder({}));
+    await sut.insert(entity);
+    const result = await sut.findAll();
+    const spyFilter = jest.spyOn(result, 'filter');
+    const filteredItems = await sut['applyFilter'](result, null);
+    expect(spyFilter).not.toHaveBeenCalled();
+    expect(filteredItems).toStrictEqual(result);
+  });
+
+  it('shouldn"t filter the name field using a filter param', async () => {
+    const items = [
+      new UserEntity(UserDataBuilder({ name: 'Test' })),
+      new UserEntity(UserDataBuilder({ name: 'TEST' })),
+      new UserEntity(UserDataBuilder({ name: 'fake' })),
+    ];
+
+    const spyFilter = jest.spyOn(items, 'filter');
+    const filteredItems = await sut['applyFilter'](items, 'TEST');
+    expect(spyFilter).toHaveBeenCalled();
+    expect(filteredItems).toStrictEqual([items[0], items[1]]);
+  });
 });
