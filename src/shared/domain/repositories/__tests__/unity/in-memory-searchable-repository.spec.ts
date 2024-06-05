@@ -230,5 +230,72 @@ describe('InMemoryRepository unit tests', () => {
         }),
       );
     });
+
+    it('should apply pagination, sort and filtering', async () => {
+      const itemsToCompare = Array.from(items);
+      sut.items = itemsToCompare;
+      let params = await sut.search(
+        new SearchParams({
+          filter: 'i',
+          page: 1,
+          perPage: 2,
+          sort: 'name',
+          sortDir: 'asc',
+        }),
+      );
+      expect(params).toStrictEqual(
+        new SearchResult({
+          items: [itemsToCompare[2], itemsToCompare[1]],
+          total: 4,
+          currentPage: 1,
+          perPage: 2,
+          sort: 'name',
+          sortDir: 'asc',
+          filter: 'i',
+        }),
+      );
+
+      params = await sut.search(
+        new SearchParams({
+          filter: 'kei',
+          page: 1,
+          perPage: 2,
+          sort: 'name',
+          sortDir: 'asc',
+        }),
+      );
+      expect(params).toStrictEqual(
+        new SearchResult({
+          items: [itemsToCompare[2]],
+          total: 1,
+          currentPage: 1,
+          perPage: 2,
+          sort: 'name',
+          sortDir: 'asc',
+          filter: 'kei',
+        }),
+      );
+
+      params = await sut.search(
+        new SearchParams({
+          filter: 'i',
+          page: 1,
+          perPage: 2,
+          sort: 'name',
+          sortDir: 'desc',
+        }),
+      );
+      expect(params).toStrictEqual(
+        new SearchResult({
+          items: [itemsToCompare[0], itemsToCompare[4]],
+          total: 4,
+          currentPage: 1,
+          perPage: 2,
+          sort: 'name',
+          sortDir: 'desc',
+          filter: 'i',
+        }),
+      );
+    });
   });
 });
