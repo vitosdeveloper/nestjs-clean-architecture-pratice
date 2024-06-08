@@ -4,7 +4,7 @@ import { UserEntity } from '@/users/domain/entities/user.entity';
 import { HashProvider } from '@/shared/application/providers/hash-provider';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace SignUpCase {
+export namespace SignUpUseCase {
   export type Input = {
     name: string;
     email: string;
