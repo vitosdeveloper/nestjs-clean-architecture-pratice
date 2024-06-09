@@ -121,14 +121,8 @@ export class SearchResult<E extends Entity, Filter = string> {
 
   toJSON(forceEntity: boolean = false) {
     return {
+      ...this,
       items: forceEntity ? this.items.map((item) => item.toJSON()) : this.items,
-      total: this.total,
-      currentPage: this.currentPage,
-      perPage: this.perPage,
-      lastPage: this.lastPage,
-      sort: this.sort,
-      sortDir: this.sortDir,
-      filter: this.filter,
     };
   }
 }
