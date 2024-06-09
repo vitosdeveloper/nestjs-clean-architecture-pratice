@@ -6,7 +6,7 @@ import { UserDataBuilder } from '@/users/domain/testing/helpers/user-data-builde
 import { ConflictError } from '@/shared/errors/conflict-error';
 import { BadRequestError } from '@/users/application/errors/bad-request-error';
 
-describe('BcryptjsHashProvider unit tests', () => {
+describe('singup usecase unit tests', () => {
   let sut: SignUpUseCase.UseCase;
   let repository: UserInMemoryRepository;
   let hashProvider: HashProvider;
