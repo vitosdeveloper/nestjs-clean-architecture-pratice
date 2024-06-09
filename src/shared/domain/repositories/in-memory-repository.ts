@@ -1,5 +1,5 @@
-import { NotFoundError } from '@/shared/errors/not-found-error';
 import { Entity } from '../entities/entity';
+import { NotFoundError } from '../errors/not-found-error';
 import { RepositoryInterface } from './repository-contracts';
 
 export abstract class InMemoryRepository<E extends Entity>

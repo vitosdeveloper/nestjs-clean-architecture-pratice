@@ -10,7 +10,6 @@ describe('BcryptjsHashProvider unit tests', () => {
   it('should return a encrypted password from the generateHash method', async () => {
     const password = 'test-password';
     const hash = await sut.generateHash(password);
-    console.log(hash);
     expect(hash).toBeDefined();
     expect(hash).not.toBe(password);
   });

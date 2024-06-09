@@ -1,4 +1,4 @@
-import { EntityValidationError } from '@/shared/errors/validation-error';
+import { EntityValidationError } from '@/shared/domain/errors/validation-error';
 import { UserEntity, UserProps } from '../../user.entity';
 import { UserDataBuilder } from '@/users/domain/testing/helpers/user-data-builder';
 
