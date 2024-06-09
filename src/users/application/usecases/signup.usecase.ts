@@ -3,6 +3,7 @@ import { BadRequestError } from '../errors/bad-request-error';
 import { UserEntity } from '@/users/domain/entities/user.entity';
 import { HashProvider } from '@/shared/application/providers/hash-provider';
 import { UserOutput } from '../dtos/user-output';
+import { IUseCase } from '@/shared/application/usecases/use-case';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace SignUpUseCase {
@@ -14,7 +15,7 @@ export namespace SignUpUseCase {
 
   export type Output = UserOutput;
 
-  export class UseCase {
+  export class UseCase implements IUseCase<Input, Output> {
     constructor(
       private userRepository: UserRepository.Repository,
       private hashProvider: HashProvider,
