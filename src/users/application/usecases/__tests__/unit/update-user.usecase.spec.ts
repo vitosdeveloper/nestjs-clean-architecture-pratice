@@ -14,7 +14,7 @@ describe('updateuser usecase unit tests', () => {
     sut = new UpdateUserUseCase.UseCase(repository);
   });
 
-  it('should throw a error when it can"t find a entity', async () => {
+  it('shouldnt find a entity', async () => {
     await expect(() =>
       sut.execute({ id: 'fake-id', name: 'test-name' }),
     ).rejects.toThrow(new NotFoundError('Entity not found'));
