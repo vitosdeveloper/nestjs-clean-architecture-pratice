@@ -1,5 +1,4 @@
 import { InjectionToken, Module, Provider } from '@nestjs/common';
-import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { DeleteUserUseCase } from '../application/usecases/delete-user.usecase';
 import { GetUserUseCase } from '../application/usecases/get-user.usecase';
@@ -13,30 +12,18 @@ import { UserInMemoryRepository } from './database/in-memory/repositories/user-i
 import { HashProvider } from '@/shared/application/providers/hash-provider';
 import { UserRepository } from '../domain/repositories/user.repository';
 
-@Module({
-  controllers: [UsersController],
-  providers: [UsersService],
-})
 class NestProvider {
-  static create(provide: InjectionToken): Provider {
-    return {
-      provide,
-      useFactory: (userRepository: UserRepository.Repository): any => {
-        return new (provide as any)(userRepository);
-      },
-      inject: ['UserRepository', 'HashProvider'],
+  static create(provide: InjectionToken, hash: boolean = false): Provider {
+    const useFactory = (
+      userRepository: UserRepository.Repository,
+      hashProvider: HashProvider,
+    ): any => {
+      if (!hash) return new (provide as any)(userRepository);
+      return new (provide as any)(userRepository, hashProvider);
     };
-  }
-
-  static createWithHash(provide: InjectionToken): Provider {
     return {
       provide,
-      useFactory: (
-        userRepository: UserRepository.Repository,
-        hashProvider: HashProvider,
-      ): any => {
-        return new (provide as any)(userRepository, hashProvider);
-      },
+      useFactory,
       inject: ['UserRepository', 'HashProvider'],
     };
   }
@@ -45,7 +32,6 @@ class NestProvider {
 @Module({
   controllers: [UsersController],
   providers: [
-    UsersService,
     {
       provide: 'UserRepository',
       useClass: UserInMemoryRepository,
@@ -57,10 +43,10 @@ class NestProvider {
     NestProvider.create(DeleteUserUseCase.UseCase),
     NestProvider.create(GetUserUseCase.UseCase),
     NestProvider.create(ListUsersUseCase.UseCase),
-    NestProvider.createWithHash(SignInUseCase.UseCase),
-    NestProvider.createWithHash(SignUpUseCase.UseCase),
-    NestProvider.createWithHash(UpdatePasswordUseCase.UseCase),
     NestProvider.create(UpdateUserUseCase.UseCase),
+    NestProvider.create(SignInUseCase.UseCase, true),
+    NestProvider.create(SignUpUseCase.UseCase, true),
+    NestProvider.create(UpdatePasswordUseCase.UseCase, true),
     // {
     //   provide: DeleteUserUseCase.UseCase,
     //   useFactory: (userRepository: UserRepository.Repository) => {
