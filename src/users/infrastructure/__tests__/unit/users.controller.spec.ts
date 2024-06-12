@@ -9,6 +9,8 @@ import { UpdateUserDto } from '../../dtos/update-user.dto';
 import { UpdatePasswordUseCase } from '@/users/application/usecases/update-password.usecase';
 import { UpdatePasswordDto } from '../../dtos/update-password.dto';
 import { GetUserUseCase } from '@/users/application/usecases/get-user.usecase';
+import { ListUsersUseCase } from '@/users/application/usecases/list-users.usecase';
+import { ListUsersDto } from '../../dtos/list-users.dto';
 
 describe('UsersController unit tests', () => {
   let sut: UsersController;
@@ -114,5 +116,26 @@ describe('UsersController unit tests', () => {
     const result = await sut.findOne(id);
     expect(result).toMatchObject(output);
     expect(GetUserUseCase.execute).toHaveBeenCalledWith({ id });
+  });
+
+  it('should list users', async () => {
+    const output: ListUsersUseCase.Output = {
+      items: [props],
+      currentPage: 1,
+      lastPage: 1,
+      perPage: 1,
+      total: 1,
+    };
+    const ListUsersUseCase = {
+      execute: jest.fn().mockReturnValue(Promise.resolve(output)),
+    };
+    sut['listUsersUseCase'] = ListUsersUseCase as any;
+    const input: ListUsersDto = {
+      page: 1,
+      perPage: 1,
+    };
+    const result = await sut.search(input);
+    expect(result).toStrictEqual(output);
+    expect(ListUsersUseCase.execute).toHaveBeenCalledWith(input);
   });
 });
