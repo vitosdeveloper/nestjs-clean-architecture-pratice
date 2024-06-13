@@ -24,3 +24,6 @@ model User {
 }
 
 //npx prisma generate --schema ./src/shared/infrastructure/database/prisma/schema.prisma
+//migration
+//npx dotenv-cli -e .env.development -- npx prisma migrate dev
+//nome da migration: create users table
