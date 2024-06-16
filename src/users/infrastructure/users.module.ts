@@ -8,9 +8,10 @@ import { SignUpUseCase } from '../application/usecases/signup.usecase';
 import { UpdatePasswordUseCase } from '../application/usecases/update-password.usecase';
 import { UpdateUserUseCase } from '../application/usecases/update-user.usecase';
 import { BcryptjsHashProvider } from './providers/hash-provider/bcryptjs-hash.provider';
-import { UserInMemoryRepository } from './database/in-memory/repositories/user-in-memory.repository';
 import { HashProvider } from '@/shared/application/providers/hash-provider';
 import { UserRepository } from '../domain/repositories/user.repository';
+import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.service';
+import { UserPrismaRepository } from './database/prisma/repositories/user-prisma-repository';
 
 class NestProvider {
   static create(provide: InjectionToken, hash: boolean = false): Provider {
@@ -33,8 +34,15 @@ class NestProvider {
   controllers: [UsersController],
   providers: [
     {
+      provide: 'PrismaService',
+      useClass: PrismaService,
+    },
+    {
       provide: 'UserRepository',
-      useClass: UserInMemoryRepository,
+      useFactory: (prismaService: PrismaService) => {
+        return new UserPrismaRepository(prismaService);
+      },
+      inject: ['PrismaService'],
     },
     {
       provide: 'HashProvider',

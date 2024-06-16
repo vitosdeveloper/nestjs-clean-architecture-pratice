@@ -1,5 +1,5 @@
 import { UserEntity } from '@/users/domain/entities/user.entity';
-import { UserInMemoryRepository } from '../../user-in-memory.repository';
+import { UserInMemoryRepository } from '../../in-memory/user-in-memory.repository';
 import { UserDataBuilder } from '@/users/domain/testing/helpers/user-data-builder';
 import { ConflictError } from '@/shared/domain/errors/conflict-error';
 import { NotFoundError } from '@/shared/domain/errors/not-found-error';
