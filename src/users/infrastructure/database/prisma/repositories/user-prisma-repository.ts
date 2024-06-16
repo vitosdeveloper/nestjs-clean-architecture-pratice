@@ -3,7 +3,6 @@ import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.se
 import { UserEntity } from '@/users/domain/entities/user.entity';
 import { UserRepository } from '@/users/domain/repositories/user.repository';
 import { UserModelMapper } from '../models/user-model.mapper';
-import { ValidationErrors } from '@/shared/domain/errors/validation-error';
 
 export class UserPrismaRepository implements UserRepository.Repository {
   sorteableFields: string[];
