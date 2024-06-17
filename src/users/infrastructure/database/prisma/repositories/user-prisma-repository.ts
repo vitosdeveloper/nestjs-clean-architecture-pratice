@@ -5,7 +5,7 @@ import { UserRepository } from '@/users/domain/repositories/user.repository';
 import { UserModelMapper } from '../models/user-model.mapper';
 
 export class UserPrismaRepository implements UserRepository.Repository {
-  sorteableFields: string[];
+  sorteableFields: string[] = ['name', 'createdAt'];
   constructor(private prismaService: PrismaService) {}
 
   findByEmail(email: string): Promise<UserEntity> {
@@ -16,11 +16,47 @@ export class UserPrismaRepository implements UserRepository.Repository {
     console.log(email);
     throw new Error('Method not implemented.');
   }
-  search(
+  async search(
     props: UserRepository.SearchParams,
   ): Promise<UserRepository.SearchResult> {
-    console.log(props);
-    throw new Error('Method not implemented.');
+    const sorteable = this.sorteableFields.includes(props.sort);
+    const orderByField = sorteable ? props.sort : 'createdAt';
+    const orderBy = sorteable ? props.sortDir : 'desc';
+    const count = await this.prismaService.user.count({
+      ...(props.filter && {
+        where: {
+          name: {
+            contains: props.filter,
+            mode: 'insensitive',
+          },
+        },
+      }),
+    });
+    const models = await this.prismaService.user.findMany({
+      ...(props.filter && {
+        where: {
+          name: {
+            contains: props.filter,
+            mode: 'insensitive',
+          },
+        },
+        orderBy: {
+          [orderByField]: orderBy,
+        },
+        skip: props.page && props.page > 0 ? (props.page - 1) * props.page : 1,
+        take: props.perPage && props.perPage > 0 ? props.perPage : 15,
+      }),
+    });
+
+    return new UserRepository.SearchResult({
+      items: models.map(UserModelMapper.toEntity),
+      total: count,
+      currentPage: props.page,
+      perPage: props.perPage,
+      sort: orderByField,
+      sortDir: orderBy,
+      filter: props.filter,
+    });
   }
   async insert(entity: UserEntity): Promise<void> {
     await this.prismaService.user.create({ data: entity.toJSON() });
@@ -30,7 +66,7 @@ export class UserPrismaRepository implements UserRepository.Repository {
   }
   async findAll(): Promise<UserEntity[]> {
     const models = await this.prismaService.user.findMany();
-    return models.map((model) => UserModelMapper.toEntity(model));
+    return models.map(UserModelMapper.toEntity);
   }
   update(entity: UserEntity): Promise<void> {
     console.log(entity);
