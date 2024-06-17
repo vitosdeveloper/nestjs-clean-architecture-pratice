@@ -9,18 +9,21 @@ export class UserPrismaRepository implements UserRepository.Repository {
   constructor(private prismaService: PrismaService) {}
 
   findByEmail(email: string): Promise<UserEntity> {
+    console.log(email);
     throw new Error('Method not implemented.');
   }
   emailExists(email: string): Promise<void> {
+    console.log(email);
     throw new Error('Method not implemented.');
   }
   search(
     props: UserRepository.SearchParams,
   ): Promise<UserRepository.SearchResult> {
+    console.log(props);
     throw new Error('Method not implemented.');
   }
-  insert(entity: UserEntity): Promise<void> {
-    throw new Error('Method not implemented.');
+  async insert(entity: UserEntity): Promise<void> {
+    await this.prismaService.user.create({ data: entity.toJSON() });
   }
   findById(id: string): Promise<UserEntity> {
     return this._get(id);
@@ -29,9 +32,11 @@ export class UserPrismaRepository implements UserRepository.Repository {
     throw new Error('Method not implemented.');
   }
   update(entity: UserEntity): Promise<void> {
+    console.log(entity);
     throw new Error('Method not implemented.');
   }
   delete(id: string): Promise<void> {
+    console.log(id);
     throw new Error('Method not implemented.');
   }
 

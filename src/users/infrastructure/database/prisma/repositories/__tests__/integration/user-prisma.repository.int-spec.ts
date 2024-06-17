@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { UserPrismaRepository } from '../../user-prisma-repository';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { execSync } from 'child_process';
 import { DatabaseModule } from '@/shared/infrastructure/database/database.module';
 import { NotFoundError } from '@/shared/domain/errors/not-found-error';
@@ -10,11 +10,10 @@ import { UserDataBuilder } from '@/users/domain/testing/helpers/user-data-builde
 describe('UserPrismaRepository integration tests', () => {
   const prismaService = new PrismaClient();
   let sut: UserPrismaRepository;
-  let module: TestingModule;
 
   beforeAll(async () => {
     execSync('npm run migration:test');
-    module = await Test.createTestingModule({
+    await Test.createTestingModule({
       imports: [DatabaseModule.forTesting(prismaService)],
     }).compile();
   });
@@ -30,12 +29,22 @@ describe('UserPrismaRepository integration tests', () => {
     );
   });
 
-  it('should find a ', async () => {
+  it('should find a user by his id', async () => {
     const entity = new UserEntity(UserDataBuilder({}));
     await prismaService.user.create({
       data: entity.toJSON(),
     });
     const output = await sut.findById(entity._id);
     expect(output.toJSON()).toStrictEqual(entity.toJSON());
+  });
+
+  it('should insert a new entity', async () => {
+    const entity = new UserEntity(UserDataBuilder({}));
+    await sut.insert(entity);
+
+    const result = await prismaService.user.findUnique({
+      where: { id: entity.id },
+    });
+    expect(result).toStrictEqual(entity.toJSON());
   });
 });
