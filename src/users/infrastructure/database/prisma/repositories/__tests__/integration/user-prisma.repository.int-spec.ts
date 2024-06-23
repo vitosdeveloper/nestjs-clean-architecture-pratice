@@ -161,4 +161,14 @@ describe('UserPrismaRepository integration tests', () => {
     });
     expect(output.name).toBe('new name');
   });
+
+  it('should delete a entity', async () => {
+    const entity = new UserEntity(UserDataBuilder({}));
+    await prismaService.user.create({ data: entity.toJSON() });
+    await sut.delete(entity._id);
+    const output = await prismaService.user.findUnique({
+      where: { id: entity._id },
+    });
+    expect(output).toBeNull();
+  });
 });
