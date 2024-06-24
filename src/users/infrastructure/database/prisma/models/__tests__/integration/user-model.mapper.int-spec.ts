@@ -1,15 +1,15 @@
 import { PrismaClient, User } from '@prisma/client';
-import { execSync } from 'child_process';
 import { UserModelMapper } from '../../user-model.mapper';
 import { ValidationErrors } from '@/shared/domain/errors/validation-error';
 import { UserEntity } from '@/users/domain/entities/user.entity';
+import { setupPrismaTests } from '@/shared/infrastructure/database/prisma/testing/setup-prisma-tests';
 
 describe('UserModelMapper integration tests', () => {
   let prismaService: PrismaClient;
   let props: any;
 
   beforeAll(async () => {
-    execSync('npm run migration:test');
+    setupPrismaTests();
     prismaService = new PrismaClient();
     await prismaService.$connect();
   });

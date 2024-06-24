@@ -1,20 +1,20 @@
 import { PrismaClient } from '@prisma/client';
 import { UserPrismaRepository } from '../../user-prisma-repository';
 import { Test } from '@nestjs/testing';
-import { execSync } from 'child_process';
 import { DatabaseModule } from '@/shared/infrastructure/database/database.module';
 import { NotFoundError } from '@/shared/domain/errors/not-found-error';
 import { UserEntity } from '@/users/domain/entities/user.entity';
 import { UserDataBuilder } from '@/users/domain/testing/helpers/user-data-builder';
 import { UserRepository } from '@/users/domain/repositories/user.repository';
 import { ConflictError } from '@/shared/domain/errors/conflict-error';
+import { setupPrismaTests } from '@/shared/infrastructure/database/prisma/testing/setup-prisma-tests';
 
 describe('UserPrismaRepository integration tests', () => {
   const prismaService = new PrismaClient();
   let sut: UserPrismaRepository;
 
   beforeAll(async () => {
-    execSync('npm run migration:test');
+    setupPrismaTests();
     await Test.createTestingModule({
       imports: [DatabaseModule.forTesting(prismaService)],
     }).compile();
