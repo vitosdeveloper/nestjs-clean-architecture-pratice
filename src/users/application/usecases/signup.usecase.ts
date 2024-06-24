@@ -23,7 +23,7 @@ export namespace SignUpUseCase {
 
     async execute(input: Input): Promise<Output> {
       const { name, email, password } = input;
-      if (!name.trim() || !email.trim() || !password.trim()) {
+      if (!name?.trim() || !email?.trim() || !password?.trim()) {
         throw new BadRequestError('Input data not provided');
       }
 

@@ -21,7 +21,7 @@ export namespace SignInUseCase {
     ) {}
 
     async execute(input: Input): Promise<Output> {
-      if (!input.email.trim() || !input.password.trim()) {
+      if (!input.email?.trim() || !input.password?.trim()) {
         throw new BadRequestError('Input data not provided');
       }
       const entity = await this.userRepository.findByEmail(input.email);
