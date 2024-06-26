@@ -11,7 +11,10 @@ import { UpdatePasswordDto } from '../../dtos/update-password.dto';
 import { GetUserUseCase } from '@/users/application/usecases/get-user.usecase';
 import { ListUsersUseCase } from '@/users/application/usecases/list-users.usecase';
 import { ListUsersDto } from '../../dtos/list-users.dto';
-import { UserPresenter } from '../../presenters/user.presenter';
+import {
+  UserCollectionPresenter,
+  UserPresenter,
+} from '../../presenters/user.presenter';
 
 describe('UsersController unit tests', () => {
   let sut: UsersController;
@@ -136,7 +139,7 @@ describe('UsersController unit tests', () => {
       perPage: 1,
     };
     const result = await sut.search(input);
-    expect(result).toStrictEqual(output);
+    expect(result).toStrictEqual(new UserCollectionPresenter(output));
     expect(ListUsersUseCase.execute).toHaveBeenCalledWith(input);
   });
 });
