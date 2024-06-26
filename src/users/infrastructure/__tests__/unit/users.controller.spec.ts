@@ -11,6 +11,7 @@ import { UpdatePasswordDto } from '../../dtos/update-password.dto';
 import { GetUserUseCase } from '@/users/application/usecases/get-user.usecase';
 import { ListUsersUseCase } from '@/users/application/usecases/list-users.usecase';
 import { ListUsersDto } from '../../dtos/list-users.dto';
+import { UserPresenter } from '../../presenters/user.presenter';
 
 describe('UsersController unit tests', () => {
   let sut: UsersController;
@@ -45,7 +46,7 @@ describe('UsersController unit tests', () => {
       password: props.password,
     };
     const result = await sut.create(input);
-    expect(result).toMatchObject(UsersController.userToResponse(output));
+    expect(result).toMatchObject(new UserPresenter(output));
     expect(mockSignUpUseCase.execute).toHaveBeenCalledWith(input);
   });
 
@@ -60,7 +61,7 @@ describe('UsersController unit tests', () => {
       password: props.password,
     };
     const result = await sut.login(input);
-    expect(result).toMatchObject(UsersController.userToResponse(output));
+    expect(result).toMatchObject(new UserPresenter(output));
     expect(mockSignInUseCase.execute).toHaveBeenCalledWith(input);
   });
 
@@ -74,7 +75,7 @@ describe('UsersController unit tests', () => {
       name: 'vivitos',
     };
     const result = await sut.update(id, input);
-    expect(result).toMatchObject(UsersController.userToResponse(output));
+    expect(result).toMatchObject(new UserPresenter(output));
     expect(updateUserUseCase.execute).toHaveBeenCalledWith({ id, ...input });
   });
 
@@ -89,7 +90,7 @@ describe('UsersController unit tests', () => {
       oldPassword: props.password,
     };
     const result = await sut.updatePassword(id, input);
-    expect(result).toMatchObject(UsersController.userToResponse(output));
+    expect(result).toMatchObject(new UserPresenter(output));
     expect(UpdatePasswordUseCase.execute).toHaveBeenCalledWith({
       id,
       ...input,
@@ -114,7 +115,7 @@ describe('UsersController unit tests', () => {
     };
     sut['getUserUseCase'] = GetUserUseCase as any;
     const result = await sut.findOne(id);
-    expect(result).toMatchObject(UsersController.userToResponse(output));
+    expect(result).toMatchObject(new UserPresenter(output));
     expect(GetUserUseCase.execute).toHaveBeenCalledWith({ id });
   });
 
