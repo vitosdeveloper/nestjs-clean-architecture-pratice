@@ -45,7 +45,7 @@ describe('UsersController unit tests', () => {
       password: props.password,
     };
     const result = await sut.create(input);
-    expect(result).toMatchObject(output);
+    expect(result).toMatchObject(UsersController.userToResponse(output));
     expect(mockSignUpUseCase.execute).toHaveBeenCalledWith(input);
   });
 
@@ -60,7 +60,7 @@ describe('UsersController unit tests', () => {
       password: props.password,
     };
     const result = await sut.login(input);
-    expect(result).toMatchObject(output);
+    expect(result).toMatchObject(UsersController.userToResponse(output));
     expect(mockSignInUseCase.execute).toHaveBeenCalledWith(input);
   });
 
@@ -74,7 +74,7 @@ describe('UsersController unit tests', () => {
       name: 'vivitos',
     };
     const result = await sut.update(id, input);
-    expect(result).toMatchObject(output);
+    expect(result).toMatchObject(UsersController.userToResponse(output));
     expect(updateUserUseCase.execute).toHaveBeenCalledWith({ id, ...input });
   });
 
@@ -89,7 +89,7 @@ describe('UsersController unit tests', () => {
       oldPassword: props.password,
     };
     const result = await sut.updatePassword(id, input);
-    expect(result).toMatchObject(output);
+    expect(result).toMatchObject(UsersController.userToResponse(output));
     expect(UpdatePasswordUseCase.execute).toHaveBeenCalledWith({
       id,
       ...input,
@@ -114,7 +114,7 @@ describe('UsersController unit tests', () => {
     };
     sut['getUserUseCase'] = GetUserUseCase as any;
     const result = await sut.findOne(id);
-    expect(result).toMatchObject(output);
+    expect(result).toMatchObject(UsersController.userToResponse(output));
     expect(GetUserUseCase.execute).toHaveBeenCalledWith({ id });
   });
 
