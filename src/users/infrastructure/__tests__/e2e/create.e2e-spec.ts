@@ -12,7 +12,7 @@ import { UsersController } from '../../users.controller';
 import { instanceToPlain } from 'class-transformer';
 import { applyGlobalConfig } from '@/global-config';
 
-describe('', () => {
+describe('create e2e', () => {
   let app: INestApplication;
   let module: TestingModule;
   let repository: UserRepository.Repository;
@@ -51,18 +51,18 @@ describe('', () => {
         .send(signupDto)
         .expect(201);
 
-      expect(Object.keys(res.body)).toStrictEqual([
+      expect(Object.keys(res.body.data)).toStrictEqual([
         'id',
         'name',
         'email',
         'createdAt',
       ]);
 
-      const user = await repository.findById(res.body.id);
+      const user = await repository.findById(res.body.data.id);
       const presenter = UsersController.userToResponse(user.toJSON());
       const serialized = instanceToPlain(presenter);
 
-      expect(res.body).toStrictEqual(serialized);
+      expect(res.body.data).toStrictEqual(serialized);
     });
   });
 });
