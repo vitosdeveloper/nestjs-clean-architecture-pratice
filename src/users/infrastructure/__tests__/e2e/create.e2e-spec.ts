@@ -64,5 +64,22 @@ describe('create e2e', () => {
 
       expect(res.body.data).toStrictEqual(serialized);
     });
+
+    it('should return a 422 error when the request body isnt valid', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/users')
+        .send({})
+        .expect(422);
+      expect(res.body.error).toBe('Unprocessable Entity');
+      expect(res.body.message).toEqual([
+        'name should not be empty',
+        'name must be a string',
+        'email must be an email',
+        'email should not be empty',
+        'email must be a string',
+        'password should not be empty',
+        'password must be a string',
+      ]);
+    });
   });
 });
