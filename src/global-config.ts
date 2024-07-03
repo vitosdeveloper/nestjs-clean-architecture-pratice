@@ -7,6 +7,7 @@ import { Reflector } from '@nestjs/core';
 import { DataInterceptorWrapper } from './shared/infrastructure/interceptors/wrapper-data/wrapper-data.interceptor';
 import { ConflictErrorFilter } from './shared/infrastructure/exception-filters/conflict-error/conflict-error.filter';
 import { NotFoundErrorFilter } from './shared/infrastructure/exception-filters/not-found-error/not-found-error.filter';
+import { InvalidPasswordErrorFilter } from './shared/infrastructure/exception-filters/invalid-password-error/invalid-password-error.filter';
 
 export async function applyGlobalConfig(app: INestApplication) {
   app.useGlobalPipes(
@@ -21,5 +22,9 @@ export async function applyGlobalConfig(app: INestApplication) {
     new DataInterceptorWrapper(),
     new ClassSerializerInterceptor(app.get(Reflector)),
   );
-  app.useGlobalFilters(new ConflictErrorFilter(), new NotFoundErrorFilter());
+  app.useGlobalFilters(
+    new ConflictErrorFilter(),
+    new NotFoundErrorFilter(),
+    new InvalidPasswordErrorFilter(),
+  );
 }

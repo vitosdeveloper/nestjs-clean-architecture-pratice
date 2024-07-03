@@ -65,7 +65,42 @@ describe('UsersController e2e tests', () => {
       expect(checkNewPassword).toBeTruthy();
     });
 
-    it('should return a 404 error', async () => {
+    it('should throw 404 err with NotFoundError', async () => {
+      const res = await request(app.getHttpServer())
+        .patch('/users/fakeId')
+        .send(updatePasswordDto)
+        .expect(404);
+      expect(res.body.error).toBe('Not Found');
+      expect(res.body.message).toEqual('User of id fakeId not found.');
+    });
+
+    it('should throw 422 err when a wrong password is sent', async () => {
+      delete updatePasswordDto.password;
+      const res = await request(app.getHttpServer())
+        .patch(`/users/${entity._id}`)
+        .send(updatePasswordDto)
+        .expect(422);
+      expect(res.body.error).toBe('Unprocessable Entity');
+      expect(res.body.message).toEqual([
+        'password should not be empty',
+        'password must be a string',
+      ]);
+    });
+
+    it('should throw 422 err when a wrong oldPassword is sent', async () => {
+      delete updatePasswordDto.oldPassword;
+      const res = await request(app.getHttpServer())
+        .patch(`/users/${entity._id}`)
+        .send(updatePasswordDto)
+        .expect(422);
+      expect(res.body.error).toBe('Unprocessable Entity');
+      expect(res.body.message).toEqual([
+        'oldPassword should not be empty',
+        'oldPassword must be a string',
+      ]);
+    });
+
+    it('should throw a 404 error', async () => {
       const res = await request(app.getHttpServer())
         .patch('/users/fakeId')
         .send({})
@@ -77,6 +112,19 @@ describe('UsersController e2e tests', () => {
         'oldPassword should not be empty',
         'oldPassword must be a string',
       ]);
+    });
+
+    it('should throw a 422 err when password and oldPassword doesnt match', async () => {
+      updatePasswordDto.oldPassword = 'fake';
+      await request(app.getHttpServer())
+        .patch(`/users/${entity._id}`)
+        .send(updatePasswordDto)
+        .expect(422)
+        .expect({
+          statusCode: 422,
+          error: 'Unprocessable Entity',
+          message: 'password and oldPassword doesnt match',
+        });
     });
   });
 });
