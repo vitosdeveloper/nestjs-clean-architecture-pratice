@@ -12,6 +12,7 @@ import { HashProvider } from '@/shared/application/providers/hash-provider';
 import { UserRepository } from '../domain/repositories/user.repository';
 import { PrismaService } from '@/shared/infrastructure/database/prisma/prisma.service';
 import { UserPrismaRepository } from './database/prisma/repositories/user-prisma-repository';
+import { AuthModule } from '@/auth/infrastructure/auth.module';
 
 class NestProvider {
   static create(provide: InjectionToken, hash: boolean = false): Provider {
@@ -31,6 +32,7 @@ class NestProvider {
 }
 
 @Module({
+  imports: [AuthModule],
   controllers: [UsersController],
   providers: [
     {
@@ -55,64 +57,6 @@ class NestProvider {
     NestProvider.create(SignInUseCase.UseCase, true),
     NestProvider.create(SignUpUseCase.UseCase, true),
     NestProvider.create(UpdatePasswordUseCase.UseCase, true),
-    // {
-    //   provide: DeleteUserUseCase.UseCase,
-    //   useFactory: (userRepository: UserRepository.Repository) => {
-    //     return new DeleteUserUseCase.UseCase(userRepository);
-    //   },
-    //   inject: ['UserRepository', 'HashProvider'],
-    // },
-    // {
-    //   provide: GetUserUseCase.UseCase,
-    //   useFactory: (userRepository: UserRepository.Repository) => {
-    //     return new GetUserUseCase.UseCase(userRepository);
-    //   },
-    //   inject: ['UserRepository', 'HashProvider'],
-    // },
-    // {
-    //   provide: ListUsersUseCase.UseCase,
-    //   useFactory: (userRepository: UserRepository.Repository) => {
-    //     return new ListUsersUseCase.UseCase(userRepository);
-    //   },
-    //   inject: ['UserRepository', 'HashProvider'],
-    // },
-    // {
-    //   provide: SignInUseCase.UseCase,
-    //   useFactory: (
-    //     userRepository: UserRepository.Repository,
-    //     hashProvider: HashProvider,
-    //   ) => {
-    //     return new SignInUseCase.UseCase(userRepository, hashProvider);
-    //   },
-    //   inject: ['UserRepository', 'HashProvider'],
-    // },
-    // {
-    //   provide: SignUpUseCase.UseCase,
-    //   useFactory: (
-    //     userRepository: UserRepository.Repository,
-    //     hashProvider: HashProvider,
-    //   ) => {
-    //     return new SignUpUseCase.UseCase(userRepository, hashProvider);
-    //   },
-    //   inject: ['UserRepository', 'HashProvider'],
-    // },
-    // {
-    //   provide: UpdatePasswordUseCase.UseCase,
-    //   useFactory: (
-    //     userRepository: UserRepository.Repository,
-    //     hashProvider: HashProvider,
-    //   ) => {
-    //     return new UpdatePasswordUseCase.UseCase(userRepository, hashProvider);
-    //   },
-    //   inject: ['UserRepository', 'HashProvider'],
-    // },
-    // {
-    //   provide: UpdateUserUseCase.UseCase,
-    //   useFactory: (userRepository: UserRepository.Repository) => {
-    //     return new UpdateUserUseCase.UseCase(userRepository);
-    //   },
-    //   inject: ['UserRepository', 'HashProvider'],
-    // },
   ],
 })
 export class UsersModule {}
