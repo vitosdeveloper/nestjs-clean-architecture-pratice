@@ -22,6 +22,7 @@ describe('UsersController e2e tests', () => {
   const prismaService = new PrismaClient();
   let hashProvider: HashProvider;
   let entity: UserEntity;
+  let accessToken: string;
 
   beforeAll(async () => {
     setupPrismaTests();
@@ -46,14 +47,22 @@ describe('UsersController e2e tests', () => {
     };
     await prismaService.user.deleteMany();
     const hashPassword = await hashProvider.generateHash('old_password');
-    entity = new UserEntity(UserDataBuilder({ password: hashPassword }));
+    entity = new UserEntity(
+      UserDataBuilder({ email: 'a@a.com', password: hashPassword }),
+    );
     await repository.insert(entity);
+    const loginResponse = await request(app.getHttpServer())
+      .post('/users/login')
+      .send({ email: 'a@a.com', password: 'old_password' })
+      .expect(200);
+    accessToken = loginResponse.body.accessToken;
   });
 
   describe('POST /users', () => {
     it('should update a password', async () => {
       const res = await request(app.getHttpServer())
         .patch(`/users/${entity._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
         .send(updatePasswordDto)
         .expect(200);
       expect(Object.keys(res.body)).toStrictEqual(['data']);
@@ -68,6 +77,7 @@ describe('UsersController e2e tests', () => {
     it('should throw 404 err with NotFoundError', async () => {
       const res = await request(app.getHttpServer())
         .patch('/users/fakeId')
+        .set('Authorization', `Bearer ${accessToken}`)
         .send(updatePasswordDto)
         .expect(404);
       expect(res.body.error).toBe('Not Found');
@@ -78,6 +88,7 @@ describe('UsersController e2e tests', () => {
       delete updatePasswordDto.password;
       const res = await request(app.getHttpServer())
         .patch(`/users/${entity._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
         .send(updatePasswordDto)
         .expect(422);
       expect(res.body.error).toBe('Unprocessable Entity');
@@ -91,6 +102,7 @@ describe('UsersController e2e tests', () => {
       delete updatePasswordDto.oldPassword;
       const res = await request(app.getHttpServer())
         .patch(`/users/${entity._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
         .send(updatePasswordDto)
         .expect(422);
       expect(res.body.error).toBe('Unprocessable Entity');
@@ -103,6 +115,7 @@ describe('UsersController e2e tests', () => {
     it('should throw a 404 error', async () => {
       const res = await request(app.getHttpServer())
         .patch('/users/fakeId')
+        .set('Authorization', `Bearer ${accessToken}`)
         .send({})
         .expect(422);
       expect(res.body.error).toBe('Unprocessable Entity');
@@ -118,12 +131,23 @@ describe('UsersController e2e tests', () => {
       updatePasswordDto.oldPassword = 'fake';
       await request(app.getHttpServer())
         .patch(`/users/${entity._id}`)
+        .set('Authorization', `Bearer ${accessToken}`)
         .send(updatePasswordDto)
         .expect(422)
         .expect({
           statusCode: 422,
           error: 'Unprocessable Entity',
           message: 'password and oldPassword doesnt match',
+        });
+    });
+
+    it('should throw a 401 err', async () => {
+      await request(app.getHttpServer())
+        .put('/users/fakeId')
+        .expect(401)
+        .expect({
+          statusCode: 401,
+          message: 'Unauthorized',
         });
     });
   });
