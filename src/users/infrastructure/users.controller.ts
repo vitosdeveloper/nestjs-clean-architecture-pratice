@@ -28,6 +28,7 @@ import {
   UserCollectionPresenter,
   UserPresenter,
 } from './presenters/user.presenter';
+import { AuthService } from '@/auth/infrastructure/auth.service';
 
 @Controller('users')
 export class UsersController {
@@ -45,6 +46,9 @@ export class UsersController {
   private updatePasswordUseCase: UpdatePasswordUseCase.UseCase;
   @Inject(UpdateUserUseCase.UseCase)
   private updateUserUseCase: UpdateUserUseCase.UseCase;
+
+  @Inject(AuthService)
+  private authService: AuthService;
 
   static userToResponse(output: UserOutput) {
     return new UserPresenter(output);
@@ -64,7 +68,7 @@ export class UsersController {
   @Post('login')
   async login(@Body() signInDto: SignInDto) {
     const output = await this.signInUseCase.execute(signInDto);
-    return UsersController.userToResponse(output);
+    return await this.authService.generateJwt(output.id);
   }
 
   @Get()

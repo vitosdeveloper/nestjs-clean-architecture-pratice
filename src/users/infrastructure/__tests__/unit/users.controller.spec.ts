@@ -2,7 +2,6 @@ import { UsersController } from '../../users.controller';
 import { UserOutput } from '@/users/application/dtos/user-output';
 import { SignUpUseCase } from '@/users/application/usecases/signup.usecase';
 import { SignUpDto } from '../../dtos/sign-up.dto';
-import { SignInUseCase } from '@/users/application/usecases/sign-in.usecase';
 import { SignInDto } from '../../dtos/sign-in.dto';
 import { UpdateUserUseCase } from '@/users/application/usecases/update-user.usecase';
 import { UpdateUserDto } from '../../dtos/update-user.dto';
@@ -54,17 +53,18 @@ describe('UsersController unit tests', () => {
   });
 
   it('should authenticate a user', async () => {
-    const output: SignInUseCase.Output = props;
-    const mockSignInUseCase = {
-      execute: jest.fn().mockReturnValue(Promise.resolve(output)),
-    };
+    const output = 'fake_token';
+    const execute = jest.fn().mockReturnValue(Promise.resolve(output));
+    const mockSignInUseCase = { execute };
+    const mockAuthService = { generateJwt: execute };
     sut['signInUseCase'] = mockSignInUseCase as any;
+    sut['authService'] = mockAuthService as any;
     const input: SignInDto = {
       email: props.email,
       password: props.password,
     };
     const result = await sut.login(input);
-    expect(result).toMatchObject(new UserPresenter(output));
+    expect(result).toStrictEqual(output);
     expect(mockSignInUseCase.execute).toHaveBeenCalledWith(input);
   });
 
